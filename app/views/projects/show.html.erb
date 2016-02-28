@@ -1,0 +1,37 @@
+<h1><%= @project.title %></h1>
+
+<ul>
+    <% @project.tasks.each do |task| %>
+      <li>
+        <%= check_box_tag '', '', task.done, { 'data-id' => task.id, 'data-project_id' => task.project_id, "data-status" => task.done } %>
+        <span class="task-name">
+          <%= task.title %>
+        </span>
+        <%= link_to "[Delete]", project_task_path(task.project.id, task.id), method: :delete, data: { confirm: "are you sure?" } %>
+      </li>
+    <% end %>
+    <li>
+      <%= form_for [@project, @project.tasks.build] do |f| %>
+        <%= f.text_field :title %>
+        <%= f.submit %>
+      <% end %>
+    </li>
+</ul>
+
+<style>
+  input:checked + .task-name {
+    text-decoration: line-through;
+  }
+</style>
+
+<script>
+  $(function() {
+    $("input[type=checkbox]").click(function() {
+      var $input_elm = $(this),
+            task_id  = $input_elm.data('id'),
+            project_id = $input_elm.data('project_id');
+
+      $.post('/projects/' + project_id + '/tasks/' + task_id + '/toggle' );
+    });
+  });
+</script>
